@@ -23,9 +23,15 @@ module.exports = function(content) {
                     <textarea slot="code" class="language-markup">${$3}</textarea>
                 </demoblock>`;
     });
+    // 将markdown中的<style>提取出来
+    let styles = '';
+    content = content.replace(/<style[^>]*?>[\s\S]+<\/style>/gim, function(m) {
+        styles += m;
+        return '';
+    });
 	content = marked(content); // markdown转HTML
     let outPath = path.join(cachePath, fileName+'.vue');
-    content = `<template><section>${content}</section></template>`;
+    content = styles + `<template><section>${content}</section></template>`;
     // marked在解析markdown中内嵌的html时，无法识别<demo-block>这种不规范的HTML，所以这里我们改成<demoblock>
     let importDemos = [`import Demoblock from '../../docs/_layout/demo-block.vue';`], demoNames = ['Demoblock'];
     demos.forEach(demo => {
